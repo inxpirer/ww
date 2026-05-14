@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacked - FiveM</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Courier+Prime&display=swap');
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            color: #0f0;
+            font-family: 'Courier Prime', monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-shadow: 0 0 5px #0f0;
+        }
+
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .container {
+            text-align: center;
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 2rem;
+            border: 1px solid #0f0;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+            border-radius: 10px;
+            max-width: 80%;
+        }
+
+        .text {
+            font-family: 'Cairo', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            font-weight: bold;
+            animation: glitch 1s infinite;
+        }
+
+        .info {
+            font-size: 1.2rem;
+            margin-top: 1rem;
+            color: #00ff00;
+        }
+
+        .terminal-text {
+            text-align: left;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            color: #0a0;
+            height: 100px;
+            overflow: hidden;
+            border-top: 1px solid #333;
+            padding-top: 10px;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        .loading-bar {
+            width: 100%;
+            height: 10px;
+            border: 1px solid #0f0;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .progress {
+            width: 0%;
+            height: 100%;
+            background: #0f0;
+            box-shadow: 0 0 10px #0f0;
+            animation: fill 5s infinite;
+        }
+
+        @keyframes fill {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="matrix-canvas"></canvas>
+
+    <audio id="hacker-audio" autoplay loop>
+        <source src="aa.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <div class="container">
+        <div class="text">اما توردها مواريد الابطال ولا استرح وخل المراجل لاهلها</div>
+        
+        <div class="info" id="ip-info">جاري جلب بيانات النظام...</div>
+        
+        <div class="loading-bar">
+            <div class="progress"></div>
+        </div>
+
+        <div class="terminal-text" id="terminal">
+            > Initializing bypass...<br>
+            > Accessing FiveM Core...<br>
+            > Injecting payload...<br>
+        </div>
+    </div>
+
+    <script>
+        // Matrix Effect
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()*&^%";
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+
+        for (let i = 0; i < columns; i++) {
+            drops[i] = 1;
+        }
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#0f0';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = characters.charAt(Math.floor(Math.random() * characters.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 33);
+
+        // Fetch IP Info
+        async function getIPInfo() {
+            try {
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+                document.getElementById('ip-info').innerHTML = `
+                    IP: ${data.ip}<br>
+                    Location: ${data.city}, ${data.country_name}<br>
+                    ISP: ${data.org}
+                `;
+            } catch (error) {
+                document.getElementById('ip-info').innerHTML = "SYSTEM ERROR: Failed to retrieve IP data.";
+            }
+        }
+
+        getIPInfo();
+
+        // Fake Terminal Text
+        const terminal = document.getElementById('terminal');
+        const lines = [
+            "> Cracking encryption...",
+            "> Connection established...",
+            "> Downloading user data...",
+            "> Bypassing server firewall...",
+            "> Access granted.",
+            "> SYSTEM COMPROMISED."
+        ];
+        let lineIdx = 0;
+
+        setInterval(() => {
+            const newLine = document.createElement('div');
+            newLine.innerText = lines[lineIdx % lines.length];
+            terminal.appendChild(newLine);
+            lineIdx++;
+            if (terminal.childNodes.length > 8) {
+                terminal.removeChild(terminal.firstChild);
+            }
+        }, 1500);
+
+        // Auto-play audio handling for browsers
+        window.addEventListener('click', () => {
+            const audio = document.getElementById('hacker-audio');
+            if (audio.paused) {
+                audio.play();
+            }
+        });
+    </script>
+</body>
+</html>
